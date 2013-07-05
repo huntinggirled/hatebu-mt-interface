@@ -6,26 +6,26 @@ $date = (!empty($_GET['date']))?$_GET['date']:date('Ymd');
 $atom = file_get_contents("http://b.hatena.ne.jp/".$ini['hatenaid']."/atomfeed?date=".$date);
 $atomobj = simplexml_load_string($atom);
 $title = "";
-$content = "";
+$text = "";
 $dateCreated = "";
 foreach($atomobj->entry as $entrydata) {
-  $content .= $entrydata->content;
+  $text .= $entrydata->content;
   $dateCreated = $entrydata->issued;
 }
-if($content=="") {
+if($text=="") {
   print 'NO BOOKMARK DATE='.$date;
   file_put_contents("log.txt", date("Y-m-d H:i:s")." NO BOOKMARK\n", FILE_APPEND | LOCK_EX);
   return;
 } else {
   //trimming
-  $content = str_replace('<a ', '<a target="_blank" ', $content);
+  $text = str_replace('<a ', '<a target="_blank" ', $text);
   $title = "ブックマーク ".date('Y年n月j日', strtotime($dateCreated));
 }
 $data = array(
   'blogid' => $ini['blogid'],
   'authorid' => $ini['authorid'],
   'title' => $title,
-  'text' => $content,
+  'text' => $text,
   'status' => ($ini['status'])?$ini['status']:'release',
 );
 // POST
@@ -36,7 +36,7 @@ $options = array('http' => array(
   'content' => http_build_query($data),
 ));
 $contents = file_get_contents($url, false, stream_context_create($options));
-$logbody = ereg_replace("\r|\n"," ",$body);
-file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$subject." ".$logbody."\n", FILE_APPEND | LOCK_EX);
+//$text = ereg_replace("\r|\n"," ",$text);
+file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$title."\n", FILE_APPEND | LOCK_EX);
 print $contents;
 ?>
