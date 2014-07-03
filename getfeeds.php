@@ -27,6 +27,7 @@ $data = array(
   'title' => $title,
   'text' => $text,
   'status' => ($ini['status'])?$ini['status']:'release',
+  'categoryid' => $ini['categoryid'],
 );
 // POST
 $url = $ini['postcgi'];
