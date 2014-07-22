@@ -16,38 +16,11 @@ if($text=="") {
   print 'NO BOOKMARK DATE='.$date;
   file_put_contents("log.txt", date("Y-m-d H:i:s")." NO BOOKMARK\n", FILE_APPEND | LOCK_EX);
   return;
+} else {
+  //trimming
+  $text = str_replace('<a ', '<a target="_blank" ', $text);
+  $title = "ブックマーク ".date('Y年n月j日', strtotime($dateCreated));
 }
-
-//trimming
-$text = str_replace('<a ', '<a target="_blank" ', $text);
-$title = "ブックマーク ".date('Y年n月j日', strtotime($dateCreated));
-
-//センテンス抽出
-$sentence = $text;
-$sentence = strip_tags($sentence);
-$sentence = str_replace("girled", "", $sentence);
-$sentence = trim($sentence);
-$sentence = urlencode($sentence);
-
-//キーフレーズ抽出、タイトルに付加
-$subject_max_length = 64;
-$appid = 'dj0zaiZpPXNMZDk4aWd0cVJKYSZzPWNvbnN1bWVyc2VjcmV0Jng9OTk-';
-$request  = "http://jlp.yahooapis.jp/KeyphraseService/V1/extract?";
-$request .= "appid=".$appid."&sentence=".$sentence."&output=xml";
-$responsexml = simplexml_load_file($request);
-$result_num = count($responsexml->Result);
-if($result_num>0){
-  for($i=0; $i<$result_num; $i++){
-    $result = $responsexml->Result[$i];
-    $keyphrase = htmlspecialchars($result->Keyphrase, ENT_QUOTES);
-    if(mb_strlen($title.' '.$keyphrase, 'UTF-8')>$subject_max_length) {
-      $title .= '...';
-      break;
-    }
-    $title .= ' '.$keyphrase;
-  }
-}
-
 $data = array(
   'blogid' => $ini['blogid'],
   'authorid' => $ini['authorid'],
