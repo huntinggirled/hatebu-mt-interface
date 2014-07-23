@@ -41,7 +41,7 @@ $options = array('http' => array(
   'content' => http_build_query($data),
 ));
 $contents = file_get_contents($url, false, stream_context_create($options));
-file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$contents."\n", FILE_APPEND | LOCK_EX);
+//file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$contents."\n", FILE_APPEND | LOCK_EX);
 $responsexml = simplexml_load_string($contents);
 $result_num = count($responsexml->Result);
 if($result_num>0){
