@@ -34,7 +34,7 @@ $data = array(
 //キーフレーズ抽出、タイトルに付加
 $subject_max_length = $ini['subjectmaxlength'];
 $appid = $ini['keyphraseappid'];
-$url = $ini['keyophraseapi'];
+$url = $ini['keyphraseurl'];
 $options = array('http' => array(
   'method' => 'POST',
   'header' => 'User-Agent: Yahoo AppID: '.$appid,
