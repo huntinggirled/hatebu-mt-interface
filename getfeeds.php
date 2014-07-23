@@ -27,14 +27,22 @@ $sentence = $text;
 $sentence = strip_tags($sentence);
 $sentence = str_replace("girled", "", $sentence);
 $sentence = trim($sentence);
-$sentence = urlencode($sentence);
+$data = array(
+  'sentence' => $sentence,
+);
 
 //キーフレーズ抽出、タイトルに付加
-$subject_max_length = 64;
-$appid = 'dj0zaiZpPXNMZDk4aWd0cVJKYSZzPWNvbnN1bWVyc2VjcmV0Jng9OTk-';
-$request  = "http://jlp.yahooapis.jp/KeyphraseService/V1/extract?";
-$request .= "appid=".$appid."&sentence=".$sentence."&output=xml";
-$responsexml = simplexml_load_file($request);
+$subject_max_length = $ini['subjectmaxlength'];
+$appid = $ini['keyphraseappid'];
+$url = $ini['keyophraseapi'];
+$options = array('http' => array(
+  'method' => 'POST',
+  'header' => 'User-Agent: Yahoo AppID: '.$appid,
+  'content' => http_build_query($data),
+));
+$contents = file_get_contents($url, false, stream_context_create($options));
+file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$contents."\n", FILE_APPEND | LOCK_EX);
+$responsexml = simplexml_load_string($contents);
 $result_num = count($responsexml->Result);
 if($result_num>0){
   for($i=0; $i<$result_num; $i++){
