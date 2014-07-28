@@ -27,34 +27,25 @@ $sentence = $text;
 $sentence = strip_tags($sentence);
 $sentence = str_replace("girled", "", $sentence);
 $sentence = trim($sentence);
-$data = array(
-  'sentence' => $sentence,
-);
 
 //キーフレーズ抽出、タイトルに付加
 $subject_max_length = $ini['subjectmaxlength'];
-$appid = $ini['keyphraseappid'];
-$url = $ini['keyphraseurl'];
-$options = array('http' => array(
-  'method' => 'POST',
-  'header' => 'User-Agent: Yahoo AppID: '.$appid,
-  'content' => http_build_query($data),
-));
-$contents = file_get_contents($url, false, stream_context_create($options));
-//file_put_contents("log.txt", date("Y-m-d H:i:s")." ".$contents."\n", FILE_APPEND | LOCK_EX);
-$responsexml = simplexml_load_string($contents);
+$output = "xml";
+$callback = "";
+require(dirname(__FILE__).'/../yahoo/keyphrase.php');
+$Keyphrase = new Keyphrase();
+$response = $Keyphrase->getKeyphrase($sentence, $output, $callback);
+$responsexml = simplexml_load_string($response);
 $result_num = count($responsexml->Result);
-if($result_num>0){
-  for($i=0; $i<$result_num; $i++){
-    $result = $responsexml->Result[$i];
-    $keyphrase = htmlspecialchars($result->Keyphrase, ENT_QUOTES);
-    if(mb_strlen($title.' '.$keyphrase, 'UTF-8')>$subject_max_length) {
-      $title .= '...';
-      break;
-    }
-    $title .= ' '.$keyphrase;
+for($i=0; $i<$result_num; $i++){
+  $result = $responsexml->Result[$i];
+  $keyphrase = trim($result->Keyphrase);
+  if(mb_strlen($title." ".$keyphrase, 'UTF-8')>=$subject_max_length) {
+    continue;
   }
+  $title = trim($title)." ".$keyphrase;
 }
+$title = htmlspecialchars($title, ENT_QUOTES);
 
 $data = array(
   'blogid' => $ini['blogid'],
