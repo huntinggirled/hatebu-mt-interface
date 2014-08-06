@@ -40,10 +40,10 @@ $result_num = count($responsexml->Result);
 for($i=0; $i<$result_num; $i++){
   $result = $responsexml->Result[$i];
   $keyphrase = trim($result->Keyphrase);
-  if(mb_strlen($title." ".$keyphrase, 'UTF-8')>=$subject_max_length) {
-    continue;
+  $keyphrase = stripcslashes($keyphrase);
+  if(mb_strlen($title." ".$keyphrase, 'UTF-8')<$subject_max_length) {
+    $title = trim($title)." ".$keyphrase;
   }
-  $title = trim($title)." ".$keyphrase;
 }
 $title = htmlspecialchars($title, ENT_QUOTES);
 
