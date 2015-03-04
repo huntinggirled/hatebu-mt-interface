@@ -40,6 +40,10 @@ $result_num = count($responsexml->Result);
 for($i=0; $i<$result_num; $i++){
   $result = $responsexml->Result[$i];
   $keyphrase = trim($result->Keyphrase);
+  $pattern = array('/(^|[^a-zA-Z0-9])([a-zA-Z0-9]{9}.net)([^a-zA-Z0-9]|$)/');
+  $replacement = array('$1$3');
+  $keyphrase = trim(preg_replace($pattern, $replacement, $keyphrase));
+  if(mb_strlen($keyphrase, 'UTF-8')<=1||$keyphrase=='') continue;
   if(mb_strlen($title." ".$keyphrase, 'UTF-8')<$subject_max_length) {
     $title = trim($title)." ".$keyphrase;
   }
